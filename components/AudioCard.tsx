@@ -55,7 +55,17 @@ export function AudioCard({ audio }: AudioCardProps) {
 
   const handleDownload = async () => {
     try {
-      const response = await fetch(audio.fileUrl);
+      toast.loading("Iniciando download...");
+
+      const apiUrl = `/api/download-audio?url=${encodeURIComponent(
+        audio.fileUrl
+      )}&name=${encodeURIComponent(audio.fileName)}`;
+      const response = await fetch(apiUrl);
+
+      if (!response.ok) {
+        throw new Error("Erro ao buscar arquivo");
+      }
+
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -65,8 +75,10 @@ export function AudioCard({ audio }: AudioCardProps) {
       a.click();
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
+      toast.dismiss();
       toast.success("Download iniciado!");
     } catch {
+      toast.dismiss();
       toast.error("Erro ao baixar o arquivo");
     }
   };

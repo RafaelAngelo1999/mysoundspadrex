@@ -7,8 +7,8 @@ service firebase.storage {
                    && request.resource.size < 10 * 1024 * 1024 // Max 10MB
                    && request.resource.contentType.matches('audio/.*');
       
-      // Qualquer um pode baixar áudios
-      allow read: if true;
+      // Apenas usuários autenticados podem baixar áudios
+      allow read: if request.auth != null;
     }
   }
 }
